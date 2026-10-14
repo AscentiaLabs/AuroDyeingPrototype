@@ -149,7 +149,7 @@
       state.overrides = saved.overrides || {};
       state.vesselOverrides = saved.vesselOverrides || {};
       state.selectedId = saved.selectedId || state.orders[0]?.id || null;
-      state.autoPlanMode = !!(saved.autoPlanMode ?? saved.knapsackMode);
+      state.autoPlanMode = !!saved.autoPlanMode;
       return true;
     } catch (_) {
       return false;
