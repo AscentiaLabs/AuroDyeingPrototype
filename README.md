@@ -2,12 +2,14 @@
 
 Yarn dyeing vessel planner for Vardhman Auro.
 
+**Live demo:** https://ascentialabs.github.io/AuroDyeingPrototype/
+
 **Flow:** New Line → Auto-Plan Vessels → clubbing / vessels / capacity → Summary 1.
 
-## Open
+## Open locally
 
 ```bash
-cd Prototype && python3 -m http.server 8765
+python3 -m http.server 8765
 # http://localhost:8765
 ```
 
