@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auro Planner — Stage 2 Yarn Dyeing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@96..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="app">
+    <aside class="rail" aria-label="App navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">A</div>
+        <div>
+          <div class="brand-name">Auro Planner</div>
+          <div class="brand-sub">Vardhman · Prototype</div>
+        </div>
+      </div>
+
+      <p class="rail-label">Planning</p>
+      <nav class="nav" id="main-nav" aria-label="Planning">
+        <button type="button" class="nav-btn" data-view="stage2" aria-selected="true">
+          <span class="nav-stage s2">S2</span>
+          <span>
+            <strong>Yarn dyeing</strong>
+            <small>Club · vessel · capacity</small>
+          </span>
+        </button>
+        <button type="button" class="nav-btn" data-view="masters">
+          <span class="nav-stage">M</span>
+          <span>
+            <strong>Masters</strong>
+            <small>Vessels · norms · cone</small>
+          </span>
+        </button>
+      </nav>
+
+      <p class="rail-label">Stages</p>
+      <nav class="nav muted" aria-label="Other stages">
+        <button type="button" class="nav-btn" disabled title="Coming soon">
+          <span class="nav-stage s1">S1</span>
+          <span>
+            <strong>Grey yarn</strong>
+            <small>Coming soon</small>
+          </span>
+        </button>
+        <button type="button" class="nav-btn" disabled title="Coming soon">
+          <span class="nav-stage s3">S3</span>
+          <span>
+            <strong>Weaving</strong>
+            <small>Coming soon</small>
+          </span>
+        </button>
+        <button type="button" class="nav-btn" disabled title="Coming soon">
+          <span class="nav-stage s4">S4</span>
+          <span>
+            <strong>Finishing</strong>
+            <small>Coming soon</small>
+          </span>
+        </button>
+      </nav>
+
+      <p class="rail-label">Demo</p>
+      <nav class="nav" aria-label="Demo">
+        <button type="button" class="nav-btn" data-view="settings">
+          <span class="nav-stage">⚙</span>
+          <span>
+            <strong>Settings</strong>
+            <small>Demo data · verify</small>
+          </span>
+        </button>
+      </nav>
+
+      <div class="rail-foot">
+        <div class="proto-chip">Stage 2 prototype</div>
+        <p>Add lines → Auto-Plan → vessels &amp; Summary 1.</p>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="topbar-text">
+          <div class="eyebrow">
+            <span class="proto-badge">Prototype</span>
+            <span id="view-crumb">Stage 2 · Yarn dyeing</span>
+          </div>
+          <h1 id="view-title">Yarn dyeing planner</h1>
+          <p id="view-desc">Trust masters, club lines, book vessels, hand off Summary 1.</p>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="btn ghost" id="btn-undo" title="Undo (Ctrl+Z)">Undo</button>
+          <button type="button" class="btn" id="btn-new-line">New Line</button>
+          <button type="button" class="btn primary" id="btn-auto-plan" title="Rebuild vessel plan">Auto-Plan Vessels</button>
+          <button type="button" class="btn" id="btn-plan">Refresh Plan</button>
+          <button type="button" class="btn" id="btn-copy-plan" disabled title="Copy Summary 1 CSV">Copy Vessel Plan</button>
+        </div>
+      </header>
+
+      <div class="chips-bar" id="chips-bar" aria-label="Orders by fabric and dyeing SO"></div>
+
+      <main class="main" id="main">
+        <!-- Stage 2 home -->
+        <section class="view" id="view-stage2" data-view="stage2" hidden>
+          <div class="toolbar-row">
+            <p class="hint" id="empty-cta">New Line → <strong>Auto-Plan Vessels</strong> — or load the example2 demo.</p>
+            <button type="button" class="btn sm" id="btn-load-demo-inline">Load Example2 Demo</button>
+          </div>
+
+          <div class="health-strip" id="health-strip" aria-live="polite"></div>
+          <div class="cap-warn" id="cap-warn" hidden aria-live="polite"></div>
+
+          <div class="split">
+            <div class="col inputs-col">
+              <div class="panel">
+                <div class="panel-head">
+                  <div>
+                    <span class="io-tag input">Input</span>
+                    <h2>Dyeing lines</h2>
+                    <p class="panel-sub">Fabric SO, product code, qty, shade, and requirement date.</p>
+                  </div>
+                  <div class="panel-actions">
+                    <div class="seg-toggle" role="tablist" aria-label="Line table mode">
+                      <button type="button" class="seg-btn" role="tab" id="tab-workspace" aria-selected="true" data-lines-mode="workspace">Workspace</button>
+                      <button type="button" class="seg-btn" role="tab" id="tab-all-lines" aria-selected="false" data-lines-mode="all">All Lines</button>
+                    </div>
+                    <button type="button" class="btn sm" id="btn-new-line-2">Add Line</button>
+                    <button type="button" class="btn sm primary" id="btn-auto-plan-inline">Auto-Plan Vessels</button>
+                    <button type="button" class="btn sm ghost danger" id="btn-clear-orders" title="Clear all lines">Clear All</button>
+                  </div>
+                </div>
+                <div class="table-wrap" id="lines-workspace-wrap">
+                  <table class="data" id="tbl-lines">
+                    <thead>
+                      <tr>
+                        <th>Fabric SO</th>
+                        <th>Dyeing SO</th>
+                        <th>Line</th>
+                        <th>Product Code</th>
+                        <th>Mixing</th>
+                        <th>W/W</th>
+                        <th>Qty kg</th>
+                        <th>Norm</th>
+                        <th>Cone</th>
+                        <th>Input kg</th>
+                        <th>Shade</th>
+                        <th>Req Date</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+                <div class="table-wrap" id="lines-all-wrap" hidden>
+                  <table class="data" id="tbl-orders-full">
+                    <thead>
+                      <tr>
+                        <th>Fabric SO</th>
+                        <th>Dyeing SO</th>
+                        <th>Line</th>
+                        <th>Product Code</th>
+                        <th>Mixing</th>
+                        <th>W/W</th>
+                        <th>Qty</th>
+                        <th>Labref</th>
+                        <th>Req Date</th>
+                        <th>Creels</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="col results-col">
+              <div class="kpi-strip" id="kpi-strip"></div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div>
+                    <span class="io-tag process">Process</span>
+                    <h2>Clubbing review</h2>
+                    <p class="panel-sub">Rule 2 — same Product Code within dyeing SO + fabric SO.</p>
+                  </div>
+                </div>
+                <div class="club-list" id="club-list"></div>
+              </div>
+
+              <div class="panel" id="output-summary-band">
+                <div class="panel-head">
+                  <div>
+                    <span class="io-tag output">Output</span>
+                    <h2>Vessel lots</h2>
+                    <p class="panel-sub">Tank fill, underload, and Master1 vessel capacities.</p>
+                  </div>
+                  <div class="panel-actions">
+                    <span class="tag" id="pack-mode-tag">Classic</span>
+                  </div>
+                </div>
+                <div class="vessel-grid" id="vessel-grid"></div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div>
+                    <span class="io-tag output">Output</span>
+                    <h2>Capacity · vessel × date</h2>
+                    <p class="panel-sub">Click a cell to inspect lots. Bookings use dyed-yarn requirement date.</p>
+                  </div>
+                </div>
+                <div class="heat-legend" aria-hidden="true">
+                  <span><i class="sw p0"></i> Empty</span>
+                  <span><i class="sw p1"></i> Low</span>
+                  <span><i class="sw p2"></i> Mid</span>
+                  <span><i class="sw p3"></i> High</span>
+                  <span><i class="sw p4"></i> Full</span>
+                </div>
+                <div class="heat-layout">
+                  <div class="heat-wrap" id="heat-wrap"></div>
+                  <aside class="lot-panel" id="lot-panel" hidden>
+                    <div class="lot-panel-head">
+                      <h3 id="lot-panel-title">Lots</h3>
+                      <button type="button" class="btn sm ghost" id="lot-panel-close" aria-label="Close lot panel">Close</button>
+                    </div>
+                    <div id="lot-panel-body"></div>
+                    <p class="footnote" id="lot-panel-note">Provision: booking uses requirement date as input date (Rule 5). Full Rule-8 date-block editor is not in this prototype.</p>
+                  </aside>
+                </div>
+              </div>
+
+              <div class="panel summary-panel" id="summary-panel">
+                <div class="panel-head">
+                  <div>
+                    <span class="io-tag output">Output · Vessel plan</span>
+                    <h2>Summary 1</h2>
+                    <p class="panel-sub">Primary handoff for weaving / overall planning.</p>
+                  </div>
+                  <div class="panel-actions">
+                    <button type="button" class="btn sm" id="btn-copy-csv" disabled>Copy CSV</button>
+                    <button type="button" class="btn sm primary" id="btn-download-csv" disabled>Download CSV</button>
+                  </div>
+                </div>
+                <div class="table-wrap">
+                  <table class="data" id="tbl-summary">
+                    <thead>
+                      <tr>
+                        <th>Vessel</th>
+                        <th>Packages</th>
+                        <th>Fill</th>
+                        <th>Input Date</th>
+                        <th>Lines</th>
+                        <th>Clubbed</th>
+                        <th>Product</th>
+                        <th>Customer</th>
+                        <th>Shades</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Masters -->
+        <section class="view" id="view-masters" data-view="masters" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <span class="io-tag input">Input</span>
+                <h2>Master1 — weaving vessels</h2>
+                <p class="panel-sub">Editable bookable capacities. Cap/day = weaving × output/day. Combined labels (e.g. 80/88) expand to both bounds.</p>
+              </div>
+              <div class="panel-actions">
+                <button type="button" class="btn sm" id="btn-m1-add">Add Vessel Row</button>
+                <button type="button" class="btn sm primary" id="btn-m1-save">Save Master1</button>
+                <button type="button" class="btn sm ghost" id="btn-reset-masters">Reset Masters To Seed</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data editable" id="tbl-m1">
+                <thead>
+                  <tr><th>Label</th><th>Weaving</th><th>Output / Day</th><th>Cap / Day</th><th></th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <span class="io-tag input">Input</span>
+                  <h2>Master2 — input norms %</h2>
+                </div>
+                <div class="panel-actions">
+                  <button type="button" class="btn sm" id="btn-m2-add">Add Mixing</button>
+                  <button type="button" class="btn sm primary" id="btn-m2-save">Save Master2</button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="data editable" id="tbl-m2">
+                  <thead>
+                    <tr><th>Mixing</th><th>Warp</th><th>Weft</th><th>Both</th><th></th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <span class="io-tag input">Input</span>
+                  <h2>Master3 — cone weight kg</h2>
+                </div>
+                <div class="panel-actions">
+                  <button type="button" class="btn sm" id="btn-m3-add">Add Mixing</button>
+                  <button type="button" class="btn sm primary" id="btn-m3-save">Save Master3</button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="data editable" id="tbl-m3">
+                  <thead>
+                    <tr><th>Mixing</th><th>Cone kg</th><th></th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Settings / demo -->
+        <section class="view" id="view-settings" data-view="settings" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <span class="io-tag process">Demo</span>
+                <h2>Demo data &amp; session</h2>
+                <p class="panel-sub">Load the example2 workbook case, or reset your working set.</p>
+              </div>
+            </div>
+            <div class="settings-actions">
+              <button type="button" class="btn primary" id="btn-load-demo">Load Example2 Demo</button>
+              <button type="button" class="btn" id="btn-reset-session">Reset Session</button>
+              <button type="button" class="btn ghost" id="btn-reset-masters-settings">Reset Masters To Seed</button>
+              <button type="button" class="btn ghost" id="btn-use-master2">Use Master2 Norms on All Lines</button>
+            </div>
+            <p class="hint" id="session-hint"></p>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <span class="io-tag process">Dev</span>
+                <h2>Verify example2 seed</h2>
+                <p class="panel-sub">Engineering check against the workbook — not the planner workflow.</p>
+              </div>
+              <button type="button" class="btn sm" id="btn-verify">Run Verify</button>
+            </div>
+            <div id="verify-result" class="verify-box idle">Click Run Verify after loading the example2 demo (with seed norms).</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- New / edit line dialog -->
+  <dialog class="dlg" id="dlg-line">
+    <form method="dialog" id="form-line" autocomplete="off">
+      <header class="dlg-head">
+        <h2 id="dlg-title">New dyeing line</h2>
+        <p>Fields a Stage-2 planner enters before vessel allocation.</p>
+      </header>
+      <div class="dlg-grid">
+        <label>Fabric SO
+          <input name="fabricSO" required placeholder="S81_S81-…" spellcheck="false" autocomplete="off">
+        </label>
+        <label>Fabric SO Line
+          <input name="fabricSOLine" placeholder="100" spellcheck="false" autocomplete="off">
+        </label>
+        <label>Dyeing SO
+          <input name="saleOrderNo" required placeholder="SW1_SW1-…" spellcheck="false" autocomplete="off">
+        </label>
+        <label>Line No
+          <input name="lineNo" required placeholder="10" spellcheck="false" autocomplete="off">
+        </label>
+        <label class="span2">Product Code
+          <input name="productCode" required placeholder="1/30.0-VV-…" spellcheck="false" autocomplete="off" translate="no">
+        </label>
+        <label class="span2">Mixing
+          <input name="mixing" required placeholder="Article key for Master2/3" spellcheck="false" autocomplete="off" translate="no">
+          <span class="field-hint">Used for norm &amp; cone lookup. Auto-suggested from product code.</span>
+        </label>
+        <label>Warp / Weft
+          <select name="warpWeft">
+            <option value="WARP">WARP</option>
+            <option value="WEFT">WEFT</option>
+            <option value="BOTH">BOTH</option>
+          </select>
+        </label>
+        <label>Order Qty (kg)
+          <input name="orderQty" type="number" step="any" min="0" required>
+        </label>
+        <label class="span2">Labref / Shade
+          <input name="labRef" placeholder="AH402506 JET BLACK" spellcheck="false" autocomplete="off">
+        </label>
+        <label>Req Date
+          <input name="reqDate" type="date" required>
+        </label>
+        <label>No. of Creels
+          <input name="noOfCreels" type="number" step="1" min="1" value="1">
+        </label>
+        <label>Customer
+          <input name="customer" placeholder="Customer name" autocomplete="off">
+        </label>
+        <label>Segment
+          <input name="segment" value="BN" placeholder="BN" spellcheck="false" autocomplete="off">
+        </label>
+        <label>Norm % <span class="optional">(override)</span>
+          <input name="normPct" type="number" step="any" placeholder="from master / default">
+        </label>
+        <label>Cone kg <span class="optional">(override)</span>
+          <input name="coneWeight" type="number" step="any" placeholder="from Master3">
+        </label>
+      </div>
+      <div class="preview" id="line-preview" hidden></div>
+      <footer class="dlg-foot">
+        <button type="button" class="btn ghost" id="dlg-cancel">Cancel</button>
+        <button type="submit" class="btn primary" id="dlg-save">Save Dyeing Line</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/masters.js"></script>
+  <script src="js/clubbing.js"></script>
+  <script src="js/vessel-pack.js"></script>
+  <script src="js/planner.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
