@@ -271,7 +271,11 @@
     replan();
     const lots = (state.plan?.groups || []).filter((g) => g.vessel != null).length;
     toast(`Auto-Plan Vessels — ${lots} lot${lots === 1 ? "" : "s"}`);
-    document.getElementById("summary-panel")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const summary = document.getElementById("summary-panel");
+    const resultsCol = document.querySelector("#view-stage2 .results-col");
+    if (summary && resultsCol) {
+      resultsCol.scrollTo({ top: summary.offsetTop - 8, behavior: "smooth" });
+    }
   }
 
   function csvPayload() {

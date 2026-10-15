@@ -37,7 +37,8 @@
 html,
 body {
   margin: 0;
-  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
   color: var(--ink);
   font-family: var(--font);
   font-size: 14px;
@@ -86,7 +87,9 @@ select {
 .app {
   display: grid;
   grid-template-columns: 260px 1fr;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 /* —— Rail —— */
@@ -233,6 +236,9 @@ select {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .topbar {
@@ -242,10 +248,8 @@ select {
   align-items: flex-start;
   padding: 18px 24px 12px;
   background: linear-gradient(180deg, rgba(251, 252, 251, 0.92), transparent);
-  position: sticky;
-  top: 0;
+  flex-shrink: 0;
   z-index: 5;
-  backdrop-filter: blur(8px);
 }
 
 .eyebrow {
@@ -295,6 +299,7 @@ select {
   overflow-x: auto;
   padding: 0 24px 10px;
   min-height: 44px;
+  flex-shrink: 0;
 }
 
 .chip {
@@ -349,11 +354,79 @@ select {
 }
 
 .main {
-  padding: 4px 24px 40px;
+  padding: 4px 24px 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .view[hidden] {
   display: none !important;
+}
+
+/* Stage 2: pin left lines; only right results scroll */
+#view-stage2 {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#view-stage2 .toolbar-row,
+#view-stage2 .health-strip,
+#view-stage2 .cap-warn {
+  flex-shrink: 0;
+}
+
+#view-stage2 .split {
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+#view-stage2 .inputs-col {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#view-stage2 .inputs-col > .panel {
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#view-stage2 .inputs-col .panel-head {
+  flex-shrink: 0;
+}
+
+#view-stage2 .inputs-col .table-wrap {
+  flex: 1;
+  min-height: 0;
+}
+
+#view-stage2 .results-col {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+}
+
+#view-masters,
+#view-settings {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* —— Buttons / tags —— */
@@ -1346,6 +1419,43 @@ table.data.editable td {
 
   .kpi-strip {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Stacked layout: allow the stage view to scroll as one column */
+  html,
+  body {
+    overflow: auto;
+    height: auto;
+  }
+
+  .app,
+  .workspace {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .main,
+  #view-stage2 {
+    overflow: visible;
+    height: auto;
+  }
+
+  #view-stage2 .split {
+    overflow: visible;
+    height: auto;
+  }
+
+  #view-stage2 .inputs-col > .panel {
+    overflow: visible;
+  }
+
+  #view-stage2 .inputs-col .table-wrap {
+    max-height: 50vh;
+  }
+
+  #view-stage2 .results-col {
+    overflow: visible;
   }
 }
 
