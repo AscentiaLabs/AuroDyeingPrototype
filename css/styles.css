@@ -374,6 +374,7 @@ select {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  gap: 12px;
   overflow: hidden;
 }
 
@@ -381,6 +382,8 @@ select {
 #view-stage2 .health-strip,
 #view-stage2 .cap-warn {
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 #view-stage2 .split {
@@ -558,15 +561,15 @@ select {
 
 /* —— Health strip —— */
 .health-strip {
-  position: sticky;
-  top: 72px;
-  z-index: 4;
-  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
   padding: 10px 14px;
+  flex-shrink: 0;
 }
 
 .health-strip.ok { border-color: #9fc4ad; }
@@ -1520,10 +1523,6 @@ table.data.editable td {
 
   .topbar {
     flex-direction: column;
-  }
-
-  .health-strip {
-    top: 0;
   }
 
   .kpi-strip {
