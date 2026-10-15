@@ -356,6 +356,7 @@ select {
 .main {
   padding: 4px 24px 16px;
   flex: 1;
+  min-width: 0;
   min-height: 0;
   overflow: hidden;
   display: flex;
@@ -369,6 +370,7 @@ select {
 /* Stage 2: pin left lines; only right results scroll */
 #view-stage2 {
   flex: 1;
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -383,9 +385,18 @@ select {
 
 #view-stage2 .split {
   flex: 1;
+  min-width: 0;
   min-height: 0;
+  width: 100%;
   align-items: stretch;
   overflow: hidden;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+}
+
+#view-stage2 .inputs-col,
+#view-stage2 .results-col {
+  min-width: 0;
+  max-width: 100%;
 }
 
 #view-stage2 .inputs-col {
@@ -397,20 +408,34 @@ select {
 
 #view-stage2 .inputs-col > .panel {
   flex: 1;
+  min-width: 0;
   min-height: 0;
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 #view-stage2 .inputs-col .panel-head {
   flex-shrink: 0;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+#view-stage2 .inputs-col .panel-actions {
+  min-width: 0;
+  justify-content: flex-end;
 }
 
 #view-stage2 .inputs-col .table-wrap {
   flex: 1;
+  min-width: 0;
   min-height: 0;
+  width: 100%;
+  overflow: auto;
 }
 
 #view-stage2 .results-col {
@@ -419,6 +444,11 @@ select {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-right: 2px;
+}
+
+#view-stage2 .results-col > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 #view-masters,
@@ -662,9 +692,15 @@ select {
 
 .split {
   display: grid;
-  grid-template-columns: minmax(320px, 0.95fr) minmax(380px, 1.2fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   gap: 14px;
   align-items: start;
+  min-width: 0;
+  width: 100%;
+}
+
+.split > .col {
+  min-width: 0;
 }
 
 .two-col {
