@@ -180,11 +180,11 @@
             <div class="col results-col">
               <div class="kpi-strip" id="kpi-strip"></div>
 
-              <div class="results-tabs" role="tablist" aria-label="Plan outputs">
-                <button type="button" class="results-tab" role="tab" id="tab-clubbing" data-results-tab="clubbing" aria-controls="pane-clubbing" aria-selected="true">Clubbing</button>
-                <button type="button" class="results-tab" role="tab" id="tab-lots" data-results-tab="lots" aria-controls="pane-lots" aria-selected="false">Vessel lots</button>
-                <button type="button" class="results-tab" role="tab" id="tab-capacity" data-results-tab="capacity" aria-controls="pane-capacity" aria-selected="false">Capacity</button>
-                <button type="button" class="results-tab" role="tab" id="tab-summary" data-results-tab="summary" aria-controls="pane-summary" aria-selected="false">Summary 1</button>
+              <div class="pane-tabs" role="tablist" aria-label="Plan outputs">
+                <button type="button" class="pane-tab" role="tab" id="tab-clubbing" data-results-tab="clubbing" aria-controls="pane-clubbing" aria-selected="true">Clubbing</button>
+                <button type="button" class="pane-tab" role="tab" id="tab-lots" data-results-tab="lots" aria-controls="pane-lots" aria-selected="false">Vessel lots</button>
+                <button type="button" class="pane-tab" role="tab" id="tab-capacity" data-results-tab="capacity" aria-controls="pane-capacity" aria-selected="false">Capacity</button>
+                <button type="button" class="pane-tab" role="tab" id="tab-summary" data-results-tab="summary" aria-controls="pane-summary" aria-selected="false">Summary 1</button>
               </div>
 
               <div class="results-panes">
@@ -287,67 +287,83 @@
 
         <!-- Masters -->
         <section class="view" id="view-masters" data-view="masters" hidden>
-          <div class="panel">
-            <div class="panel-head">
-              <div>
-                <span class="io-tag input">Input</span>
-                <h2>Master1 — weaving vessels</h2>
-                <p class="panel-sub">Editable bookable capacities. Cap/day = weaving × output/day. Combined labels (e.g. 80/88) expand to both bounds.</p>
-              </div>
-              <div class="panel-actions">
-                <button type="button" class="btn sm" id="btn-m1-add">Add Vessel Row</button>
-                <button type="button" class="btn sm primary" id="btn-m1-save">Save Master1</button>
-                <button type="button" class="btn sm ghost" id="btn-reset-masters">Reset Masters To Seed</button>
-              </div>
-            </div>
-            <div class="table-wrap">
-              <table class="data editable" id="tbl-m1">
-                <thead>
-                  <tr><th>Label</th><th>Weaving</th><th>Output / Day</th><th>Cap / Day</th><th></th></tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
+          <div class="pane-tabs" role="tablist" aria-label="Planning masters">
+            <button type="button" class="pane-tab" role="tab" id="tab-m1" data-masters-tab="m1" aria-controls="pane-m1" aria-selected="true">Master1 · Vessels</button>
+            <button type="button" class="pane-tab" role="tab" id="tab-m2" data-masters-tab="m2" aria-controls="pane-m2" aria-selected="false">Master2 · Norms</button>
+            <button type="button" class="pane-tab" role="tab" id="tab-m3" data-masters-tab="m3" aria-controls="pane-m3" aria-selected="false">Master3 · Cone</button>
           </div>
-          <div class="two-col">
-            <div class="panel">
-              <div class="panel-head">
-                <div>
-                  <span class="io-tag input">Input</span>
-                  <h2>Master2 — input norms %</h2>
+
+          <div class="masters-panes">
+            <div class="masters-pane" id="pane-m1" role="tabpanel" data-masters-pane="m1" aria-labelledby="tab-m1">
+              <div class="panel">
+                <div class="panel-head">
+                  <div>
+                    <span class="io-tag input">Input</span>
+                    <h2>Master1 — weaving vessels</h2>
+                    <p class="panel-sub">Editable bookable capacities. Cap/day = weaving × output/day. Combined labels (e.g. 80/88) expand to both bounds.</p>
+                  </div>
+                  <div class="panel-actions">
+                    <button type="button" class="btn sm" id="btn-m1-add">Add Vessel Row</button>
+                    <button type="button" class="btn sm primary" id="btn-m1-save">Save Master1</button>
+                    <button type="button" class="btn sm ghost" id="btn-reset-masters">Reset Masters To Seed</button>
+                  </div>
                 </div>
-                <div class="panel-actions">
-                  <button type="button" class="btn sm" id="btn-m2-add">Add Mixing</button>
-                  <button type="button" class="btn sm primary" id="btn-m2-save">Save Master2</button>
+                <div class="table-wrap">
+                  <table class="data editable" id="tbl-m1">
+                    <thead>
+                      <tr><th>Label</th><th>Weaving</th><th>Output / Day</th><th>Cap / Day</th><th></th></tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
                 </div>
-              </div>
-              <div class="table-wrap">
-                <table class="data editable" id="tbl-m2">
-                  <thead>
-                    <tr><th>Mixing</th><th>Warp</th><th>Weft</th><th>Both</th><th></th></tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
               </div>
             </div>
-            <div class="panel">
-              <div class="panel-head">
-                <div>
-                  <span class="io-tag input">Input</span>
-                  <h2>Master3 — cone weight kg</h2>
+
+            <div class="masters-pane" id="pane-m2" role="tabpanel" data-masters-pane="m2" aria-labelledby="tab-m2" hidden>
+              <div class="panel">
+                <div class="panel-head">
+                  <div>
+                    <span class="io-tag input">Input</span>
+                    <h2>Master2 — input norms %</h2>
+                    <p class="panel-sub">Warp / weft / both input norms keyed by Mixing article.</p>
+                  </div>
+                  <div class="panel-actions">
+                    <button type="button" class="btn sm" id="btn-m2-add">Add Mixing</button>
+                    <button type="button" class="btn sm primary" id="btn-m2-save">Save Master2</button>
+                  </div>
                 </div>
-                <div class="panel-actions">
-                  <button type="button" class="btn sm" id="btn-m3-add">Add Mixing</button>
-                  <button type="button" class="btn sm primary" id="btn-m3-save">Save Master3</button>
+                <div class="table-wrap">
+                  <table class="data editable" id="tbl-m2">
+                    <thead>
+                      <tr><th>Mixing</th><th>Warp</th><th>Weft</th><th>Both</th><th></th></tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
                 </div>
               </div>
-              <div class="table-wrap">
-                <table class="data editable" id="tbl-m3">
-                  <thead>
-                    <tr><th>Mixing</th><th>Cone kg</th><th></th></tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
+            </div>
+
+            <div class="masters-pane" id="pane-m3" role="tabpanel" data-masters-pane="m3" aria-labelledby="tab-m3" hidden>
+              <div class="panel">
+                <div class="panel-head">
+                  <div>
+                    <span class="io-tag input">Input</span>
+                    <h2>Master3 — cone weight kg</h2>
+                    <p class="panel-sub">Cone weight lookup by Mixing for package calculations.</p>
+                  </div>
+                  <div class="panel-actions">
+                    <button type="button" class="btn sm" id="btn-m3-add">Add Mixing</button>
+                    <button type="button" class="btn sm primary" id="btn-m3-save">Save Master3</button>
+                  </div>
+                </div>
+                <div class="table-wrap">
+                  <table class="data editable" id="tbl-m3">
+                    <thead>
+                      <tr><th>Mixing</th><th>Cone kg</th><th></th></tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>

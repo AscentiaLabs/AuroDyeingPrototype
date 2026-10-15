@@ -65,6 +65,7 @@
     healthExpanded: false,
     autoPlanMode: false,
     resultsTab: "clubbing",
+    mastersTab: "m1",
   };
 
   let toastTimer = null;
@@ -267,15 +268,30 @@
   function setResultsTab(tab) {
     const id = ["clubbing", "lots", "capacity", "summary"].includes(tab) ? tab : "clubbing";
     state.resultsTab = id;
-    document.querySelectorAll(".results-tab").forEach((btn) => {
+    document.querySelectorAll("[data-results-tab]").forEach((btn) => {
       const on = btn.dataset.resultsTab === id;
       btn.setAttribute("aria-selected", on ? "true" : "false");
     });
-    document.querySelectorAll(".results-pane").forEach((pane) => {
+    document.querySelectorAll("[data-results-pane]").forEach((pane) => {
       const on = pane.dataset.resultsPane === id;
       pane.hidden = !on;
     });
     const panes = document.querySelector("#view-stage2 .results-panes");
+    if (panes) panes.scrollTop = 0;
+  }
+
+  function setMastersTab(tab) {
+    const id = ["m1", "m2", "m3"].includes(tab) ? tab : "m1";
+    state.mastersTab = id;
+    document.querySelectorAll("[data-masters-tab]").forEach((btn) => {
+      const on = btn.dataset.mastersTab === id;
+      btn.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.querySelectorAll("[data-masters-pane]").forEach((pane) => {
+      const on = pane.dataset.mastersPane === id;
+      pane.hidden = !on;
+    });
+    const panes = document.querySelector("#view-masters .masters-panes");
     if (panes) panes.scrollTop = 0;
   }
 
@@ -1308,8 +1324,11 @@
       btn.addEventListener("click", () => setView(btn.dataset.view));
     });
 
-    document.querySelectorAll(".results-tab").forEach((btn) => {
+    document.querySelectorAll("[data-results-tab]").forEach((btn) => {
       btn.addEventListener("click", () => setResultsTab(btn.dataset.resultsTab));
+    });
+    document.querySelectorAll("[data-masters-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => setMastersTab(btn.dataset.mastersTab));
     });
 
     document.getElementById("btn-plan").addEventListener("click", () => {
@@ -1401,6 +1420,7 @@
     if (!state.masters?.master1) state.masters = cloneMasters(seedData);
     bind();
     setResultsTab(state.resultsTab || "clubbing");
+    setMastersTab(state.mastersTab || "m1");
     replan();
     setView("stage2");
   }

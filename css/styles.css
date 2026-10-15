@@ -450,7 +450,7 @@ select {
 }
 
 #view-stage2 .results-col > .kpi-strip,
-#view-stage2 .results-col > .results-tabs {
+#view-stage2 .results-col > .pane-tabs {
   flex-shrink: 0;
   min-width: 0;
   max-width: 100%;
@@ -469,8 +469,8 @@ select {
   margin-bottom: 0;
 }
 
-/* Results tabs — right column */
-.results-tabs {
+/* Shared pane tabs (Vessel outputs + Masters) */
+.pane-tabs {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
@@ -479,9 +479,10 @@ select {
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--bg-2);
+  flex-shrink: 0;
 }
 
-.results-tab {
+.pane-tab {
   flex: 1 1 auto;
   min-width: 0;
   border: 0;
@@ -495,18 +496,39 @@ select {
   white-space: nowrap;
 }
 
-.results-tab:hover {
+.pane-tab:hover {
   color: var(--ink);
   background: rgba(255, 255, 255, 0.55);
 }
 
-.results-tab[aria-selected="true"] {
+.pane-tab[aria-selected="true"] {
   background: var(--surface);
   color: var(--green);
   box-shadow: var(--shadow);
 }
 
-#view-masters,
+#view-masters {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#view-masters .masters-panes {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+#view-masters .masters-pane > .panel {
+  margin-bottom: 0;
+}
+
 #view-settings {
   flex: 1;
   min-height: 0;
