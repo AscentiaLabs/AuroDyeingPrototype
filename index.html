@@ -3,45 +3,53 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Auro Planner — Stage 2 Yarn Dyeing</title>
+  <title>Auro — AI Vessel Planning</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@96..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@96..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="ai-shell">
   <a class="skip-link" href="#main">Skip to main content</a>
   <div class="app">
     <aside class="rail" aria-label="App navigation">
       <div class="brand">
-        <div class="brand-mark" aria-hidden="true">A</div>
+        <div class="brand-mark" aria-hidden="true"><span class="brand-mark-core">A</span></div>
         <div>
-          <div class="brand-name">Auro Planner</div>
-          <div class="brand-sub">Vardhman · Prototype</div>
+          <div class="brand-name">Auro <span class="brand-ai">AI</span></div>
+          <div class="brand-sub">Vardhman · Inference engine</div>
         </div>
       </div>
 
-      <p class="rail-label">Planning</p>
+      <div class="model-chip" aria-live="polite">
+        <span class="model-dot" aria-hidden="true"></span>
+        <span class="model-meta">
+          <strong>auro-vessel-pack</strong>
+          <small>model online · low latency</small>
+        </span>
+      </div>
+
+      <p class="rail-label">Intelligence</p>
       <nav class="nav" id="main-nav" aria-label="Planning">
         <button type="button" class="nav-btn" data-view="stage2" aria-selected="true">
           <span class="nav-stage s2">S2</span>
           <span>
             <strong>Yarn dyeing</strong>
-            <small>Lines · clubbing</small>
+            <small>Signal · clubbing</small>
           </span>
         </button>
-        <button type="button" class="nav-btn" data-view="vessels">
-          <span class="nav-stage s2">AI</span>
+        <button type="button" class="nav-btn nav-btn-ai" data-view="vessels">
+          <span class="nav-stage ai">AI</span>
           <span>
             <strong>Vessel Planning</strong>
-            <small>AI views · lots · capacity</small>
+            <small>Inference views</small>
           </span>
         </button>
         <button type="button" class="nav-btn" data-view="masters">
           <span class="nav-stage">M</span>
           <span>
             <strong>Masters</strong>
-            <small>Vessels · norms · cone</small>
+            <small>Model constraints</small>
           </span>
         </button>
       </nav>
@@ -83,27 +91,31 @@
       </nav>
 
       <div class="rail-foot">
-        <div class="proto-chip">Stage 2 prototype</div>
-        <p>Lines → clubbing → Vessel Planning AI views → Summary 1.</p>
+        <div class="proto-chip">AI · Stage 2</div>
+        <p>Ingest lines → club → run inference → Summary 1 handoff.</p>
       </div>
     </aside>
 
     <div class="workspace">
+      <div class="ai-mesh" aria-hidden="true"></div>
       <header class="topbar">
         <div class="topbar-text">
           <div class="eyebrow">
-            <span class="proto-badge">Prototype</span>
+            <span class="proto-badge">AI Engine</span>
+            <span class="live-pill"><i></i> Live</span>
             <span id="view-crumb">Stage 2 · Yarn dyeing</span>
           </div>
           <h1 id="view-title">Yarn dyeing planner</h1>
-          <p id="view-desc">Add dyeing lines, review clubbing, then open Vessel Planning for AI views.</p>
+          <p id="view-desc">Feed dyeing lines into the model. Club, then run AI vessel inference.</p>
         </div>
         <div class="topbar-actions">
           <button type="button" class="btn ghost" id="btn-undo" title="Undo (Ctrl+Z)">Undo</button>
           <button type="button" class="btn" id="btn-new-line">New Line</button>
-          <button type="button" class="btn primary" id="btn-auto-plan" title="Rebuild vessel plan">Auto-Plan Vessels</button>
-          <button type="button" class="btn" id="btn-plan">Refresh Plan</button>
-          <button type="button" class="btn" id="btn-copy-plan" disabled title="Copy Summary 1 CSV">Copy Vessel Plan</button>
+          <button type="button" class="btn primary ai-run" id="btn-auto-plan" title="Run AI vessel packing">
+            <span class="ai-run-label">Run AI Plan</span>
+          </button>
+          <button type="button" class="btn" id="btn-plan">Recompute</button>
+          <button type="button" class="btn" id="btn-copy-plan" disabled title="Copy Summary 1 CSV">Export Plan</button>
         </div>
       </header>
 
@@ -113,7 +125,7 @@
         <!-- Stage 2 home -->
         <section class="view" id="view-stage2" data-view="stage2" hidden>
           <div class="toolbar-row">
-            <p class="hint" id="empty-cta">New Line → <strong>Auto-Plan Vessels</strong> — or load the example2 demo.</p>
+            <p class="hint" id="empty-cta">New Line → <strong>Run AI Plan</strong> — or load the example2 demo.</p>
             <button type="button" class="btn sm" id="btn-load-demo-inline">Load Example2 Demo</button>
           </div>
 
@@ -135,7 +147,7 @@
                       <button type="button" class="seg-btn" role="tab" id="tab-all-lines" aria-selected="false" data-lines-mode="all">All Lines</button>
                     </div>
                     <button type="button" class="btn sm" id="btn-new-line-2">Add Line</button>
-                    <button type="button" class="btn sm primary" id="btn-auto-plan-inline">Auto-Plan Vessels</button>
+                    <button type="button" class="btn sm primary ai-run" id="btn-auto-plan-inline">Run AI Plan</button>
                     <button type="button" class="btn sm ghost danger" id="btn-clear-orders" title="Clear all lines">Clear All</button>
                   </div>
                 </div>
@@ -190,10 +202,10 @@
                   <div>
                     <span class="io-tag process">Process</span>
                     <h2>Clubbing review</h2>
-                    <p class="panel-sub">Rule 2 — same Product Code within dyeing SO + fabric SO. Open <strong>Vessel Planning</strong> for AI vessel views.</p>
+                    <p class="panel-sub">Rule 2 grouping — then send lots to the AI vessel engine.</p>
                   </div>
                   <div class="panel-actions">
-                    <button type="button" class="btn sm primary" id="btn-goto-vessels">Vessel Planning →</button>
+                    <button type="button" class="btn sm primary ai-run" id="btn-goto-vessels">Open AI views →</button>
                   </div>
                 </div>
                 <div class="club-list" id="club-list"></div>
@@ -206,11 +218,11 @@
         <section class="view" id="view-vessels" data-view="vessels" hidden>
           <div class="kpi-strip" id="kpi-strip"></div>
 
-          <div class="pane-tabs" role="tablist" aria-label="Vessel Planning AI views">
-            <button type="button" class="pane-tab" role="tab" id="tab-ai" data-vessel-tab="ai" aria-controls="pane-ai" aria-selected="true">AI plan</button>
+          <div class="pane-tabs pane-tabs-ai" role="tablist" aria-label="Vessel Planning AI views">
+            <button type="button" class="pane-tab" role="tab" id="tab-ai" data-vessel-tab="ai" aria-controls="pane-ai" aria-selected="true">Inference</button>
             <button type="button" class="pane-tab" role="tab" id="tab-lots" data-vessel-tab="lots" aria-controls="pane-lots" aria-selected="false">Vessel lots</button>
-            <button type="button" class="pane-tab" role="tab" id="tab-capacity" data-vessel-tab="capacity" aria-controls="pane-capacity" aria-selected="false">Capacity</button>
-            <button type="button" class="pane-tab" role="tab" id="tab-summary" data-vessel-tab="summary" aria-controls="pane-summary" aria-selected="false">Summary 1</button>
+            <button type="button" class="pane-tab" role="tab" id="tab-capacity" data-vessel-tab="capacity" aria-controls="pane-capacity" aria-selected="false">Capacity map</button>
+            <button type="button" class="pane-tab" role="tab" id="tab-summary" data-vessel-tab="summary" aria-controls="pane-summary" aria-selected="false">Handoff</button>
           </div>
 
           <div class="vessel-panes">
@@ -218,13 +230,13 @@
               <div class="panel ai-plan-panel">
                 <div class="panel-head">
                   <div>
-                    <span class="io-tag output">AI</span>
-                    <h2>AI vessel plan</h2>
-                    <p class="panel-sub">Auto-Plan packs clubbed lots into Master1 vessels; review suggestions before Summary 1 handoff.</p>
+                    <span class="io-tag ai">Inference</span>
+                    <h2>Model output · vessel pack</h2>
+                    <p class="panel-sub">auro-vessel-pack assigns Master1 tanks from clubbed lots. Accept, override, then export Summary 1.</p>
                   </div>
                   <div class="panel-actions">
                     <span class="tag" id="pack-mode-tag">Classic</span>
-                    <button type="button" class="btn sm primary" id="btn-auto-plan-vessels">Auto-Plan Vessels</button>
+                    <button type="button" class="btn sm primary ai-run" id="btn-auto-plan-vessels">Run AI Plan</button>
                   </div>
                 </div>
                 <div id="ai-plan-body" class="ai-plan-body"></div>

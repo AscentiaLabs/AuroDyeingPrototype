@@ -35,18 +35,18 @@
   const VIEWS = {
     stage2: {
       crumb: "Stage 2 · Yarn dyeing",
-      title: "Yarn dyeing planner",
-      desc: "Add dyeing lines, review clubbing, then open Vessel Planning for AI views.",
+      title: "Yarn dyeing · signal ingest",
+      desc: "Feed dyeing lines into the model. Club assortments, then run AI vessel inference.",
     },
     vessels: {
       crumb: "Stage 2 · Vessel Planning",
-      title: "Vessel Planning",
-      desc: "AI vessel views — plan overview, lots, capacity heat map, and Summary 1.",
+      title: "Vessel Planning · AI engine",
+      desc: "Live inference views — model output, tank lots, capacity map, Summary 1 handoff.",
     },
     masters: {
-      crumb: "Masters",
-      title: "Planning masters",
-      desc: "Edit vessel capacities, input norms, and cone weights — saved with your session.",
+      crumb: "Masters · constraints",
+      title: "Model constraints",
+      desc: "Vessel capacities, input norms, and cone weights the packer optimizes against.",
     },
     settings: {
       crumb: "Settings",
@@ -307,7 +307,7 @@
     persist();
     replan();
     const lots = (state.plan?.groups || []).filter((g) => g.vessel != null).length;
-    toast(`Auto-Plan Vessels — ${lots} lot${lots === 1 ? "" : "s"}`);
+    toast(`AI inference complete — ${lots} lot${lots === 1 ? "" : "s"} packed`);
     setView("vessels");
     setVesselTab("ai");
   }
@@ -406,7 +406,7 @@
     const lines = state.plan?.lines || [];
     if (!lines.length) {
       el.className = "health-strip";
-      el.innerHTML = `<div class="health-row"><div class="health-metric"><span class="label">Master join</span><span class="value">—</span></div><span class="hint">New Line → Auto-Plan Vessels.</span></div>`;
+      el.innerHTML = `<div class="health-row"><div class="health-metric"><span class="label">Master join</span><span class="value">—</span></div><span class="hint">New Line → Run AI Plan.</span></div>`;
       return;
     }
     const cov = joinCoverage(lines);
@@ -468,7 +468,7 @@
   function renderChips() {
     const bar = document.getElementById("chips-bar");
     if (!state.orders.length) {
-      bar.innerHTML = `<div class="empty" style="padding:10px 14px;width:100%"><strong>No lines yet</strong> New Line → Auto-Plan Vessels, or Load Example2 Demo.</div>`;
+      bar.innerHTML = `<div class="empty" style="padding:10px 14px;width:100%"><strong>No lines yet</strong> New Line → Run AI Plan, or Load Example2 Demo.</div>`;
       return;
     }
 
@@ -547,7 +547,7 @@
   function renderLinesTable() {
     const tbody = document.querySelector("#tbl-lines tbody");
     if (!state.orders.length) {
-      tbody.innerHTML = `<tr><td colspan="13"><div class="empty"><strong>No dyeing lines</strong>New Line, then Auto-Plan Vessels.</div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="13"><div class="empty"><strong>No dyeing lines</strong>New Line, then Run AI Plan.</div></td></tr>`;
       return;
     }
     const byId = new Map((state.plan?.lines || []).map((l) => [l.id, l]));
@@ -627,7 +627,7 @@
     const tbody = document.querySelector("#tbl-orders-full tbody");
     if (!tbody) return;
     if (!state.orders.length) {
-      tbody.innerHTML = `<tr><td colspan="11"><div class="empty"><strong>Empty order set</strong>New Line → Auto-Plan Vessels.</div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="11"><div class="empty"><strong>Empty order set</strong>New Line → Run AI Plan.</div></td></tr>`;
       return;
     }
     tbody.innerHTML = state.orders
@@ -686,13 +686,13 @@
     const body = document.getElementById("ai-plan-body");
     const modeTag = document.getElementById("pack-mode-tag");
     if (modeTag) {
-      modeTag.textContent = state.autoPlanMode ? "Auto" : "Classic";
+      modeTag.textContent = state.autoPlanMode ? "Inference" : "Classic";
       modeTag.className = state.autoPlanMode ? "tag ok" : "tag";
     }
     if (!body) return;
     const groups = state.plan?.groups || [];
     if (!groups.length) {
-      body.innerHTML = `<div class="empty"><strong>No AI vessel plan yet</strong>Add lines on Yarn dyeing, then Auto-Plan Vessels.</div>`;
+      body.innerHTML = `<div class="empty"><strong>Model idle</strong>Ingest lines on Yarn dyeing, then Run AI Plan.</div>`;
       return;
     }
     const lots = groups.filter((x) => x.vessel != null).length;
@@ -701,7 +701,7 @@
     const under = groups.filter((x) => x.underload).length;
     const suggest = groups.filter((x) => x.suggest != null).length;
     const bad = groups.filter((x) => !x.vesselOk).length;
-    const modeLabel = state.autoPlanMode ? "Auto-Plan" : "Classic";
+    const modeLabel = state.autoPlanMode ? "Inference" : "Classic";
     const cards = groups
       .map((g) => {
         const key = groupKey(g);
@@ -709,32 +709,32 @@
         const cls = !g.vesselOk ? "bad" : g.underload ? "under" : "";
         const shades = allShades(g).join(" · ") || "—";
         const status = !g.vesselOk
-          ? `<span class="tag bad">Unassigned</span>`
+          ? `<span class="tag bad">Blocked</span>`
           : g.underload
-            ? `<span class="tag warn">Underload</span>`
-            : `<span class="tag ok">Ready</span>`;
+            ? `<span class="tag warn">Low fill</span>`
+            : `<span class="tag ok">Accepted</span>`;
         const suggestBtn =
           g.suggest != null
-            ? `<button type="button" class="btn sm suggest ai-apply-suggest" data-key="${esc(key)}" data-suggest="${esc(g.suggest)}">Apply V${esc(g.suggest)}</button>`
+            ? `<button type="button" class="btn sm suggest ai-apply-suggest" data-key="${esc(key)}" data-suggest="${esc(g.suggest)}">Accept V${esc(g.suggest)}</button>`
             : "";
         return `<article class="ai-card ${cls}" data-key="${esc(key)}">
           <div>
             <h3 translate="no">${esc((g.productCode || "").slice(0, 42))}${g.clubbed ? ' <span class="tag club">Clubbed</span>' : ""}</h3>
             <p class="meta">Lines ${esc(g.lineNos.join(" + "))} · ${esc(shades)} · ${fmt(g.packages, 3)} pkg → Vessel <strong>${esc(g.vessel ?? "—")}</strong></p>
           </div>
-          <div class="ai-actions">${status}${suggestBtn}<button type="button" class="btn sm ghost ai-open-lots">Lots</button></div>
+          <div class="ai-actions">${status}${suggestBtn}<button type="button" class="btn sm ghost ai-open-lots">Inspect</button></div>
           <div class="fill-bar" aria-hidden="true"><i style="width:${pct}%"></i></div>
         </article>`;
       })
       .join("");
     body.innerHTML = `
       <div class="ai-hero">
-        <div class="ai-stat"><div class="k">Mode</div><div class="v ${state.autoPlanMode ? "ok" : ""}">${esc(modeLabel)}</div></div>
-        <div class="ai-stat"><div class="k">Lots booked</div><div class="v">${lots}/${groups.length}</div></div>
+        <div class="ai-stat"><div class="k">Engine</div><div class="v ${state.autoPlanMode ? "ok" : ""}">${esc(modeLabel)}</div></div>
+        <div class="ai-stat"><div class="k">Lots packed</div><div class="v">${lots}/${groups.length}</div></div>
         <div class="ai-stat"><div class="k">Avg fill</div><div class="v">${avg != null ? avg + "%" : "—"}</div></div>
-        <div class="ai-stat"><div class="k">Needs review</div><div class="v ${under + bad + suggest ? "warn" : "ok"}">${under + bad + suggest}</div></div>
+        <div class="ai-stat"><div class="k">Review queue</div><div class="v ${under + bad + suggest ? "warn" : "ok"}">${under + bad + suggest}</div></div>
       </div>
-      <p class="hint" style="margin:0">Review queue — ${suggest} smaller-vessel suggestion${suggest === 1 ? "" : "s"}, ${under} underload${under === 1 ? "" : "s"}, ${bad} unassigned.</p>
+      <p class="hint" style="margin:0">Model proposals — ${suggest} alternate tank${suggest === 1 ? "" : "s"}, ${under} underload${under === 1 ? "" : "s"}, ${bad} blocked.</p>
       <div class="ai-queue">${cards}</div>`;
     body.querySelectorAll(".ai-open-lots").forEach((btn) => {
       btn.addEventListener("click", () => setVesselTab("lots"));
@@ -772,11 +772,11 @@
     const groups = state.plan?.groups || [];
     const modeTag = document.getElementById("pack-mode-tag");
     if (modeTag) {
-      modeTag.textContent = state.autoPlanMode ? "Auto" : "Classic";
+      modeTag.textContent = state.autoPlanMode ? "Inference" : "Classic";
       modeTag.className = state.autoPlanMode ? "tag ok" : "tag";
     }
     if (!groups.length) {
-      grid.innerHTML = `<div class="empty"><strong>No vessel plan yet</strong>New Line → Auto-Plan Vessels.</div>`;
+      grid.innerHTML = `<div class="empty"><strong>No vessel plan yet</strong>Run AI Plan from Yarn dyeing or Inference.</div>`;
       return;
     }
     grid.innerHTML = groups
@@ -1414,7 +1414,7 @@
       replan();
       setView("vessels");
       setVesselTab("ai");
-      toast("Stage 2 plan refreshed");
+      toast("Plan recomputed");
     });
     document.getElementById("btn-auto-plan").addEventListener("click", autoPlan);
     document.getElementById("btn-auto-plan-inline")?.addEventListener("click", autoPlan);
