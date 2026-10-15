@@ -443,15 +443,67 @@ select {
 
 #view-stage2 .results-col {
   min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   padding-right: 2px;
 }
 
-#view-stage2 .results-col > * {
+#view-stage2 .results-col > .kpi-strip,
+#view-stage2 .results-col > .results-tabs {
+  flex-shrink: 0;
   min-width: 0;
   max-width: 100%;
+}
+
+#view-stage2 .results-panes {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+#view-stage2 .results-pane > .panel {
+  margin-bottom: 0;
+}
+
+/* Results tabs — right column */
+.results-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-2);
+}
+
+.results-tab {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-soft);
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.results-tab:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.results-tab[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--green);
+  box-shadow: var(--shadow);
 }
 
 #view-masters,

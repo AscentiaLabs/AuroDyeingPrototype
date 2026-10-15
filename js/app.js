@@ -64,6 +64,7 @@
     heatSelection: null,
     healthExpanded: false,
     autoPlanMode: false,
+    resultsTab: "clubbing",
   };
 
   let toastTimer = null;
@@ -263,6 +264,21 @@
     renderAll();
   }
 
+  function setResultsTab(tab) {
+    const id = ["clubbing", "lots", "capacity", "summary"].includes(tab) ? tab : "clubbing";
+    state.resultsTab = id;
+    document.querySelectorAll(".results-tab").forEach((btn) => {
+      const on = btn.dataset.resultsTab === id;
+      btn.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.querySelectorAll(".results-pane").forEach((pane) => {
+      const on = pane.dataset.resultsPane === id;
+      pane.hidden = !on;
+    });
+    const panes = document.querySelector("#view-stage2 .results-panes");
+    if (panes) panes.scrollTop = 0;
+  }
+
   function autoPlan() {
     pushHistory();
     state.vesselOverrides = {};
@@ -271,11 +287,7 @@
     replan();
     const lots = (state.plan?.groups || []).filter((g) => g.vessel != null).length;
     toast(`Auto-Plan Vessels — ${lots} lot${lots === 1 ? "" : "s"}`);
-    const summary = document.getElementById("summary-panel");
-    const resultsCol = document.querySelector("#view-stage2 .results-col");
-    if (summary && resultsCol) {
-      resultsCol.scrollTo({ top: summary.offsetTop - 8, behavior: "smooth" });
-    }
+    setResultsTab("summary");
   }
 
   function csvPayload() {
@@ -1296,6 +1308,10 @@
       btn.addEventListener("click", () => setView(btn.dataset.view));
     });
 
+    document.querySelectorAll(".results-tab").forEach((btn) => {
+      btn.addEventListener("click", () => setResultsTab(btn.dataset.resultsTab));
+    });
+
     document.getElementById("btn-plan").addEventListener("click", () => {
       replan();
       setView("stage2");
@@ -1384,6 +1400,7 @@
     if (!loadSession()) seedDemo({ resetMasters: true });
     if (!state.masters?.master1) state.masters = cloneMasters(seedData);
     bind();
+    setResultsTab(state.resultsTab || "clubbing");
     replan();
     setView("stage2");
   }
