@@ -36,7 +36,12 @@
     stage2: {
       crumb: "Stage 2 · Yarn dyeing",
       title: "Yarn dyeing planner",
-      desc: "Add dyeing lines, Auto-Plan vessels, hand off Summary 1.",
+      desc: "Add dyeing lines, review clubbing, then open Vessel Planning for AI views.",
+    },
+    vessels: {
+      crumb: "Stage 2 · Vessel Planning",
+      title: "Vessel Planning",
+      desc: "AI vessel views — plan overview, lots, capacity heat map, and Summary 1.",
     },
     masters: {
       crumb: "Masters",
@@ -64,7 +69,7 @@
     heatSelection: null,
     healthExpanded: false,
     autoPlanMode: false,
-    resultsTab: "clubbing",
+    vesselTab: "ai",
     mastersTab: "m1",
   };
 
@@ -265,18 +270,18 @@
     renderAll();
   }
 
-  function setResultsTab(tab) {
-    const id = ["clubbing", "lots", "capacity", "summary"].includes(tab) ? tab : "clubbing";
-    state.resultsTab = id;
-    document.querySelectorAll("[data-results-tab]").forEach((btn) => {
-      const on = btn.dataset.resultsTab === id;
+  function setVesselTab(tab) {
+    const id = ["ai", "lots", "capacity", "summary"].includes(tab) ? tab : "ai";
+    state.vesselTab = id;
+    document.querySelectorAll("[data-vessel-tab]").forEach((btn) => {
+      const on = btn.dataset.vesselTab === id;
       btn.setAttribute("aria-selected", on ? "true" : "false");
     });
-    document.querySelectorAll("[data-results-pane]").forEach((pane) => {
-      const on = pane.dataset.resultsPane === id;
+    document.querySelectorAll("[data-vessel-pane]").forEach((pane) => {
+      const on = pane.dataset.vesselPane === id;
       pane.hidden = !on;
     });
-    const panes = document.querySelector("#view-stage2 .results-panes");
+    const panes = document.querySelector("#view-vessels .vessel-panes");
     if (panes) panes.scrollTop = 0;
   }
 
@@ -303,7 +308,8 @@
     replan();
     const lots = (state.plan?.groups || []).filter((g) => g.vessel != null).length;
     toast(`Auto-Plan Vessels — ${lots} lot${lots === 1 ? "" : "s"}`);
-    setResultsTab("summary");
+    setView("vessels");
+    setVesselTab("ai");
   }
 
   function csvPayload() {
@@ -364,6 +370,7 @@
     renderOrdersFull();
     renderKpis();
     renderClubs();
+    renderAiPlan();
     renderVessels();
     renderHeat();
     renderLotPanel();
@@ -659,6 +666,7 @@
 
   function renderKpis() {
     const el = document.getElementById("kpi-strip");
+    if (!el) return;
     const g = state.plan?.groups || [];
     const lots = g.filter((x) => x.vessel != null).length;
     const fills = g.filter((x) => x.fillRatio != null).map((x) => x.fillRatio);
@@ -672,6 +680,77 @@
       <div class="kpi"><div class="k">Underload</div><div class="v ${under ? "warn" : ""}">${under}</div></div>
       <div class="kpi"><div class="k">Clubbed</div><div class="v">${clubbed}</div></div>
       <div class="kpi"><div class="k">Unassigned</div><div class="v ${bad ? "bad" : ""}">${bad}</div></div>`;
+  }
+
+  function renderAiPlan() {
+    const body = document.getElementById("ai-plan-body");
+    const modeTag = document.getElementById("pack-mode-tag");
+    if (modeTag) {
+      modeTag.textContent = state.autoPlanMode ? "Auto" : "Classic";
+      modeTag.className = state.autoPlanMode ? "tag ok" : "tag";
+    }
+    if (!body) return;
+    const groups = state.plan?.groups || [];
+    if (!groups.length) {
+      body.innerHTML = `<div class="empty"><strong>No AI vessel plan yet</strong>Add lines on Yarn dyeing, then Auto-Plan Vessels.</div>`;
+      return;
+    }
+    const lots = groups.filter((x) => x.vessel != null).length;
+    const fills = groups.filter((x) => x.fillRatio != null).map((x) => x.fillRatio);
+    const avg = fills.length ? Math.round((fills.reduce((a, b) => a + b, 0) / fills.length) * 100) : null;
+    const under = groups.filter((x) => x.underload).length;
+    const suggest = groups.filter((x) => x.suggest != null).length;
+    const bad = groups.filter((x) => !x.vesselOk).length;
+    const modeLabel = state.autoPlanMode ? "Auto-Plan" : "Classic";
+    const cards = groups
+      .map((g) => {
+        const key = groupKey(g);
+        const pct = g.fillRatio != null ? Math.min(g.fillRatio * 100, 100) : 0;
+        const cls = !g.vesselOk ? "bad" : g.underload ? "under" : "";
+        const shades = allShades(g).join(" · ") || "—";
+        const status = !g.vesselOk
+          ? `<span class="tag bad">Unassigned</span>`
+          : g.underload
+            ? `<span class="tag warn">Underload</span>`
+            : `<span class="tag ok">Ready</span>`;
+        const suggestBtn =
+          g.suggest != null
+            ? `<button type="button" class="btn sm suggest ai-apply-suggest" data-key="${esc(key)}" data-suggest="${esc(g.suggest)}">Apply V${esc(g.suggest)}</button>`
+            : "";
+        return `<article class="ai-card ${cls}" data-key="${esc(key)}">
+          <div>
+            <h3 translate="no">${esc((g.productCode || "").slice(0, 42))}${g.clubbed ? ' <span class="tag club">Clubbed</span>' : ""}</h3>
+            <p class="meta">Lines ${esc(g.lineNos.join(" + "))} · ${esc(shades)} · ${fmt(g.packages, 3)} pkg → Vessel <strong>${esc(g.vessel ?? "—")}</strong></p>
+          </div>
+          <div class="ai-actions">${status}${suggestBtn}<button type="button" class="btn sm ghost ai-open-lots">Lots</button></div>
+          <div class="fill-bar" aria-hidden="true"><i style="width:${pct}%"></i></div>
+        </article>`;
+      })
+      .join("");
+    body.innerHTML = `
+      <div class="ai-hero">
+        <div class="ai-stat"><div class="k">Mode</div><div class="v ${state.autoPlanMode ? "ok" : ""}">${esc(modeLabel)}</div></div>
+        <div class="ai-stat"><div class="k">Lots booked</div><div class="v">${lots}/${groups.length}</div></div>
+        <div class="ai-stat"><div class="k">Avg fill</div><div class="v">${avg != null ? avg + "%" : "—"}</div></div>
+        <div class="ai-stat"><div class="k">Needs review</div><div class="v ${under + bad + suggest ? "warn" : "ok"}">${under + bad + suggest}</div></div>
+      </div>
+      <p class="hint" style="margin:0">Review queue — ${suggest} smaller-vessel suggestion${suggest === 1 ? "" : "s"}, ${under} underload${under === 1 ? "" : "s"}, ${bad} unassigned.</p>
+      <div class="ai-queue">${cards}</div>`;
+    body.querySelectorAll(".ai-open-lots").forEach((btn) => {
+      btn.addEventListener("click", () => setVesselTab("lots"));
+    });
+    body.querySelectorAll(".ai-apply-suggest").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.dataset.key;
+        const cap = Number(btn.dataset.suggest);
+        if (!key || !cap) return;
+        pushHistory();
+        state.vesselOverrides[key] = cap;
+        persist();
+        replan();
+        toast(`Applied suggested vessel ${cap}`);
+      });
+    });
   }
 
   function vesselOptions(selected) {
@@ -1324,8 +1403,8 @@
       btn.addEventListener("click", () => setView(btn.dataset.view));
     });
 
-    document.querySelectorAll("[data-results-tab]").forEach((btn) => {
-      btn.addEventListener("click", () => setResultsTab(btn.dataset.resultsTab));
+    document.querySelectorAll("[data-vessel-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => setVesselTab(btn.dataset.vesselTab));
     });
     document.querySelectorAll("[data-masters-tab]").forEach((btn) => {
       btn.addEventListener("click", () => setMastersTab(btn.dataset.mastersTab));
@@ -1333,11 +1412,17 @@
 
     document.getElementById("btn-plan").addEventListener("click", () => {
       replan();
-      setView("stage2");
+      setView("vessels");
+      setVesselTab("ai");
       toast("Stage 2 plan refreshed");
     });
     document.getElementById("btn-auto-plan").addEventListener("click", autoPlan);
     document.getElementById("btn-auto-plan-inline")?.addEventListener("click", autoPlan);
+    document.getElementById("btn-auto-plan-vessels")?.addEventListener("click", autoPlan);
+    document.getElementById("btn-goto-vessels")?.addEventListener("click", () => {
+      setView("vessels");
+      setVesselTab(state.vesselTab || "ai");
+    });
     document.getElementById("btn-undo").addEventListener("click", undo);
     document.getElementById("btn-new-line").addEventListener("click", () => openLineDialog(null));
     document.getElementById("btn-new-line-2").addEventListener("click", () => openLineDialog(null));
@@ -1419,7 +1504,7 @@
     if (!loadSession()) seedDemo({ resetMasters: true });
     if (!state.masters?.master1) state.masters = cloneMasters(seedData);
     bind();
-    setResultsTab(state.resultsTab || "clubbing");
+    setVesselTab(state.vesselTab || "ai");
     setMastersTab(state.mastersTab || "m1");
     replan();
     setView("stage2");
